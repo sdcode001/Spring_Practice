@@ -11,8 +11,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-
 import javax.sql.DataSource;
+
 
 /*
 * This class is used for Declarative Security configuration.
@@ -126,6 +126,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http){
 
+        //Filter chain
         http.authorizeHttpRequests(configurer ->
                 configurer
                         .requestMatchers(HttpMethod.GET, "/api/employees").hasRole("EMPLOYEE")
@@ -134,7 +135,28 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/employees").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.PATCH, "/api/employees/**").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.DELETE, "/api/employees/**").hasRole("ADMIN")
-                );
+                        .requestMatchers(HttpMethod.GET, "/page/home").hasRole("EMPLOYEE")
+                        .anyRequest().authenticated() //Any request to the app must be authenticated(Good Practice)
+                )
+                /*
+                * Here we enabled the support for custom login page.
+                * If request isn't authenticated then will be redirected to "/auth/showLoginPage" to serve custom login page.
+                * After user entered username and password, login page should POST the data to "/authenticateUser" for processing.
+                * Spring Security will automatically check username and password on POST to "/authenticateUser" no need to create any Controller.
+                * */
+                .formLogin(form ->
+                        form
+                                .loginPage("/auth/showLoginPage")
+                                .loginProcessingUrl("/authenticateUser")
+                                .permitAll() //Allow everyone to see login page, No need to be logged in.
+                )
+                /*
+                * Add logout support for default URL "/logout"
+                * For logout make POST request(through button click) to default "/logout" URL and Spring Security will automatically handle logout.
+                * On logout Spring Security will invalidate user HTTP session and remove cookies and redirect to login page.
+                * */
+                .logout(logout -> logout.permitAll());
+
 
         //use HTTP Basic authentication
         http.httpBasic(Customizer.withDefaults());
