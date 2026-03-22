@@ -135,7 +135,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/employees").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.PATCH, "/api/employees/**").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.DELETE, "/api/employees/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/").hasRole("EMPLOYEE")
                         .requestMatchers(HttpMethod.GET, "/page/home").hasRole("EMPLOYEE")
+                        .requestMatchers(HttpMethod.GET, "/page/leaders/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/page/systems/**").hasRole("ADMIN")
                         .anyRequest().authenticated() //Any request to the app must be authenticated(Good Practice)
                 )
                 /*
@@ -155,7 +158,13 @@ public class SecurityConfig {
                 * For logout make POST request(through button click) to default "/logout" URL and Spring Security will automatically handle logout.
                 * On logout Spring Security will invalidate user HTTP session and remove cookies and redirect to login page.
                 * */
-                .logout(logout -> logout.permitAll());
+                .logout(logout -> logout.permitAll())
+                /*
+                * Show/redirect user to custom access-denied page, In case of access-denied
+                * */
+                .exceptionHandling(configurer ->
+                        configurer.accessDeniedPage("/auth/access-denied")
+                );
 
 
         //use HTTP Basic authentication
