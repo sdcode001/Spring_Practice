@@ -1,6 +1,9 @@
 package com.sd.HibernateJPA;
 
+import com.sd.HibernateJPA.dao.InstructorDao;
 import com.sd.HibernateJPA.dao.StudentDao;
+import com.sd.HibernateJPA.entity.Instructor;
+import com.sd.HibernateJPA.entity.InstructorDetails;
 import com.sd.HibernateJPA.entity.Student;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -17,18 +20,72 @@ public class HibernateJpaApplication {
 
     //Dependency injection for StudentDao
     @Bean
-    public CommandLineRunner commandLineRunner(StudentDao studentDao){
+    public CommandLineRunner commandLineRunner(StudentDao studentDao, InstructorDao instructorDao){
         return runner -> {
             //saveStudentToDB(studentDao);
-            saveManyStudentToDB(studentDao, 5);
+            //saveManyStudentToDB(studentDao, 5);
             //readStudentById(studentDao, 5);
             //readAllStudents(studentDao);
             //readStudentByLastname(studentDao, "Dey");
             //readStudentByGmail(studentDao);
             //updateStudentLastname(studentDao, "Dey", "Dev");
             //deleteStudentById(studentDao, 6);
+
+            //------ Advanced Hibernate Mappings Demo ------
+
+            //saveInstructorToDB(instructorDao);
+            //showInstructorById(instructorDao);
+            //deleteInstructorById(instructorDao);
+            //showInstructorDetailsById(instructorDao);
+            deleteInstructorDetailsById(instructorDao);
+
         };
     }
+
+    //------ Advanced Hibernate Mappings Demo methods ------
+
+    private void saveInstructorToDB(InstructorDao instructorDao){
+        Instructor newInstructor = new Instructor("Deep Modak", "dm@gmail.com");
+        InstructorDetails newInstructorDetails = new InstructorDetails("Badminton");
+        //associate the objects
+        newInstructor.setInstructorDetails(newInstructorDetails);
+        //NOTE: This will also save associated InstructorDetails and cascade = CascadeType.ALL
+        System.out.println("Saving Instructor: "+newInstructor);
+        instructorDao.save(newInstructor);
+    }
+
+    private void showInstructorById(InstructorDao instructorDao){
+        int id = 1;
+        System.out.println("Finding Instructor by id: "+id);
+        Instructor instructor = instructorDao.findById(id);
+        System.out.println("Found Instructor: "+instructor);
+        System.out.println("Found associated InstructorDetails: "+instructor.getInstructorDetails());
+    }
+
+    private void deleteInstructorById(InstructorDao instructorDao){
+        int id = 1;
+        System.out.println("Deleting Instructor by id: "+id);
+        instructorDao.deleteById(id);
+        System.out.println("Deleted Instructor with id: "+id);
+    }
+
+    private void showInstructorDetailsById(InstructorDao instructorDao){
+        int id = 2;
+        System.out.println("Finding InstructorDetails by id: "+id);
+        InstructorDetails instructorDetails = instructorDao.findInstructorDetailsById(id);
+        System.out.println("Found InstructorDetails: "+instructorDetails);
+        System.out.println("Found associated Instructor: "+instructorDetails.getInstructor());
+    }
+
+    private void deleteInstructorDetailsById(InstructorDao instructorDao){
+        int id = 2;
+        System.out.println("Deleting InstructorDetails by id: "+id);
+        instructorDao.deleteInstructorDetailsById(id);
+        System.out.println("Deleted InstructorDetails with id: "+id);
+    }
+
+
+    //--------------- Hibernate Demo methods ---------------
 
     private void saveStudentToDB(StudentDao studentDao){
         Student student = new Student("Anik", "Roy", "anik.roy10@gmail.com");
