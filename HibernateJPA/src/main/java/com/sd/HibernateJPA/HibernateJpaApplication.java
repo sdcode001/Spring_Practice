@@ -2,9 +2,8 @@ package com.sd.HibernateJPA;
 
 import com.sd.HibernateJPA.dao.InstructorDao;
 import com.sd.HibernateJPA.dao.StudentDao;
-import com.sd.HibernateJPA.entity.Instructor;
-import com.sd.HibernateJPA.entity.InstructorDetails;
-import com.sd.HibernateJPA.entity.Student;
+import com.sd.HibernateJPA.dao.TutorDao;
+import com.sd.HibernateJPA.entity.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,7 +19,7 @@ public class HibernateJpaApplication {
 
     //Dependency injection for StudentDao
     @Bean
-    public CommandLineRunner commandLineRunner(StudentDao studentDao, InstructorDao instructorDao){
+    public CommandLineRunner commandLineRunner(StudentDao studentDao, InstructorDao instructorDao, TutorDao tutorDao){
         return runner -> {
             //saveStudentToDB(studentDao);
             //saveManyStudentToDB(studentDao, 5);
@@ -33,16 +32,86 @@ public class HibernateJpaApplication {
 
             //------ Advanced Hibernate Mappings Demo ------
 
+            //One-To-One
             //saveInstructorToDB(instructorDao);
             //showInstructorById(instructorDao);
             //deleteInstructorById(instructorDao);
             //showInstructorDetailsById(instructorDao);
-            deleteInstructorDetailsById(instructorDao);
+            //deleteInstructorDetailsById(instructorDao);
+
+            //One-TO-Many or Many-To-One
+            //saveTutorWithCoursesToDB(tutorDao);
+            //showTutorById(tutorDao);
+            //showTutorByIdJoinFetch(tutorDao);
+            //updateCourse(tutorDao);
+            //deleteTutorById(tutorDao);
+            //deleteCourseById(tutorDao);
 
         };
     }
 
     //------ Advanced Hibernate Mappings Demo methods ------
+
+    private void  saveTutorWithCoursesToDB(TutorDao tutorDao){
+        Tutor newTutor = new Tutor("Souvik Dey", "sd@email.com");
+        Course course1 = new Course("Core Java Master 3.0");
+        Course course2 = new Course("SpringBoot and Hibernate Masterclass");
+        newTutor.addCourse(course1);
+        newTutor.addCourse(course2);
+        System.out.println("Saving Tutor: "+newTutor);
+        tutorDao.save(newTutor);
+    }
+
+    private void updateTutor(TutorDao tutorDao){
+        int id = 2;
+        //Fetch Tutor by id
+        Tutor tutor = tutorDao.findById(id);
+        //updating tutor
+        tutor.setName("RANDOM NAME");
+        System.out.println("Updating Tutor by id: "+id);
+        tutorDao.update(tutor);
+        System.out.println("Updated Tutor: "+tutor);
+    }
+
+    private void updateCourse(TutorDao tutorDao){
+        int id = 2;
+        //Fetch Course by id
+        Course course = tutorDao.findCourseById(id);
+        //updating course
+        course.setName("RANDOM NAME");
+        System.out.println("Updating Course by id: "+id);
+        tutorDao.updateCourse(course);
+        System.out.println("Updated Course: "+course);
+    }
+
+    private void showTutorById(TutorDao tutorDao){
+        int id = 2;
+        System.out.println("Finding Tutor by id: "+id);
+        Tutor tutor = tutorDao.findById(id);
+        System.out.println("Found Tutor: "+tutor);
+    }
+
+    private void showTutorByIdJoinFetch(TutorDao tutorDao){
+        int id = 2;
+        System.out.println("Finding Tutor by id: "+id);
+        Tutor tutor = tutorDao.findByIdJoinFetch(id);
+        System.out.println("Found Tutor: "+tutor);
+        System.out.println("Found associated Courses: "+tutor.getCourses());
+    }
+
+    private void deleteTutorById(TutorDao tutorDao){
+        int id = 2;
+        System.out.println("Deleting Tutor by id: "+id);
+        tutorDao.deleteTutorById(id);
+        System.out.println("Deleted Tutor with id: "+id);
+    }
+
+    private void deleteCourseById(TutorDao tutorDao){
+        int id = 3;
+        System.out.println("Deleting Course by id: "+id);
+        tutorDao.deleteCourseById(id);
+        System.out.println("Deleted Course with id: "+id);
+    }
 
     private void saveInstructorToDB(InstructorDao instructorDao){
         Instructor newInstructor = new Instructor("Deep Modak", "dm@gmail.com");

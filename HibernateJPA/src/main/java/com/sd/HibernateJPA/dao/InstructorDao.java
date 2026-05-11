@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class InstructorDao implements IInstructorDao{
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     @Autowired
     public InstructorDao(EntityManager entityManager){
