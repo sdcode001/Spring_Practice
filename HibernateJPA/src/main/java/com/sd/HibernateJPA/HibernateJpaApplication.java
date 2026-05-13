@@ -39,18 +39,82 @@ public class HibernateJpaApplication {
             //showInstructorDetailsById(instructorDao);
             //deleteInstructorDetailsById(instructorDao);
 
-            //One-TO-Many or Many-To-One
+            //One-To-Many or Many-To-One
             //saveTutorWithCoursesToDB(tutorDao);
             //showTutorById(tutorDao);
             //showTutorByIdJoinFetch(tutorDao);
             //updateCourse(tutorDao);
             //deleteTutorById(tutorDao);
             //deleteCourseById(tutorDao);
+            //saveCourseWithReviewsToDB(tutorDao);
+            //showCourseByIdJoinFetch(tutorDao);
+            //deleteCourseAndReviewsById(tutorDao);
+
+            //Many-To-Many
+            //saveStudentWithSubjectsToDB(studentDao);
+            //showStudentWithSubjectsById(studentDao);
+            //showSubjectWithStudentsById(studentDao);
+            //addStudentByUpdatingSubject(studentDao);
+            //deleteStudentById(studentDao);
+            //deleteSubjectById(studentDao);
 
         };
     }
 
     //------ Advanced Hibernate Mappings Demo methods ------
+
+    private void deleteSubjectById(StudentDao studentDao){
+        int subjectId = 3;
+        System.out.println("Deleting Subject by id: "+subjectId);
+        studentDao.deleteSubjectById(subjectId);
+        System.out.println("Deleted Subject with id: "+subjectId);
+    }
+
+    private void deleteStudentById(StudentDao studentDao){
+        int studentId = 13;
+        System.out.println("Deleting Student by id: "+studentId);
+        studentDao.deleteStudentById(studentId);
+        System.out.println("Deleted Student with id: "+studentId);
+    }
+
+    private void addStudentByUpdatingSubject(StudentDao studentDao){
+        int subjectId = 1;
+        Subject subject = studentDao.findSubjectWithStudentsById(subjectId);
+        Student student1 = new Student("Abhay", "Singh", "as@emailcon");
+        Student student2 = new Student("Deep", "Modak", "dm@emailcon");
+        subject.addStudent(student1);
+        subject.addStudent(student2);
+        System.out.println("Adding Students by Subject update: "+subject);
+        System.out.println("Students to be added: "+subject.getStudents());
+        studentDao.updateSubject(subject);
+    }
+
+    private void showSubjectWithStudentsById(StudentDao studentDao){
+        int id = 1;
+        System.out.println("Finding Subject by id: "+id);
+        Subject subject = studentDao.findSubjectWithStudentsById(id);
+        System.out.println("Found Subject: "+subject);
+        System.out.println("Found associated Students: "+subject.getStudents());
+    }
+
+    private void showStudentWithSubjectsById(StudentDao studentDao){
+        int id = 6;
+        System.out.println("Finding Student by id: "+id);
+        Student student = studentDao.findStudentWithSubjectsById(id);
+        System.out.println("Found Student: "+student);
+        System.out.println("Found associated Subjects: "+student.getSubjects());
+    }
+
+    private void saveStudentWithSubjectsToDB(StudentDao studentDao){
+        Student newStudent = new Student("Souvik", "Dey", "sd@email.com");
+        Subject sub1 = new Subject("Math");
+        Subject sub2 = new Subject("Physics");
+        newStudent.addSubject(sub1);
+        newStudent.addSubject(sub2);
+        System.out.println("Saving Student: "+newStudent);
+        System.out.println("Saving associated subjects: "+newStudent.getSubjects());
+        studentDao.save(newStudent);
+    }
 
     private void  saveTutorWithCoursesToDB(TutorDao tutorDao){
         Tutor newTutor = new Tutor("Souvik Dey", "sd@email.com");
@@ -60,6 +124,32 @@ public class HibernateJpaApplication {
         newTutor.addCourse(course2);
         System.out.println("Saving Tutor: "+newTutor);
         tutorDao.save(newTutor);
+    }
+
+    private void  saveCourseWithReviewsToDB(TutorDao tutorDao){
+        Course newCourse = new Course("Ultimate SpringBoot 3.0");
+        Review review1 = new Review("Its a very good course");
+        Review review2 = new Review("This course is underrated");
+        newCourse.addReview(review1);
+        newCourse.addReview(review2);
+        System.out.println("Saving Course: "+newCourse);
+        System.out.println("Saving associated reviews: "+newCourse.getReviews());
+        tutorDao.saveCourse(newCourse);
+    }
+
+    private void showCourseByIdJoinFetch(TutorDao tutorDao){
+        int id = 5;
+        System.out.println("Finding Course by id: "+id);
+        Course course = tutorDao.findCourseByIdJoinFetch(id);
+        System.out.println("Found Course: "+course);
+        System.out.println("Found associated Reviews: "+course.getReviews());
+    }
+
+    private void deleteCourseAndReviewsById(TutorDao tutorDao){
+        int courseId = 5;
+        System.out.println("Deleting Course by id: "+courseId);
+        tutorDao.deleteCourseById(courseId);
+        System.out.println("Deleted Course with id: "+courseId);
     }
 
     private void updateTutor(TutorDao tutorDao){

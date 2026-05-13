@@ -2,6 +2,9 @@ package com.sd.HibernateJPA.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /*
 * A entity class must be annotated with @Entity annotation to enable JPA ORM(object to relational mapping)
 * Entity class must have default constructor.
@@ -21,6 +24,8 @@ import jakarta.persistence.*;
 *       IDENTITY as generation strategy covers most of the use cases on most of the DB tables.
 * */
 
+//Demo for Many-To-Many relation between student and subject
+
 @Entity
 @Table(name = "student")
 public class Student {
@@ -38,14 +43,34 @@ public class Student {
     @Column(name = "email")
     private String email;
 
-    public Student(){
+    //Define Many-To-Many relation with subject. And don't allow cascade delete.
+    @ManyToMany(
+            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
+            fetch = FetchType.LAZY
+    )
+    @JoinTable(
+            name = "student_subject",
+            joinColumns = @JoinColumn(name = "student_id"),
+            inverseJoinColumns = @JoinColumn(name = "subject_id")
+    )
+    private List<Subject> subjects;
 
-    }
+    public Student(){ }
 
     public Student(String firstName, String lastName, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+    }
+
+    //convenience method for Bi-directional relationship
+    public void addSubject(Subject subject){
+        if(this.subjects == null){
+            this.subjects = new ArrayList<>();
+        }
+        this.subjects.add(subject);
+        //linking Student with Subject
+        subject.addStudent(this);
     }
 
     public int getId() {
@@ -78,6 +103,14 @@ public class Student {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<Subject> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<Subject> subjects) {
+        this.subjects = subjects;
     }
 
     @Override

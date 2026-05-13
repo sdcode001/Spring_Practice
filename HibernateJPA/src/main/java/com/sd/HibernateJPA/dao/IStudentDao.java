@@ -1,6 +1,7 @@
 package com.sd.HibernateJPA.dao;
 
 import com.sd.HibernateJPA.entity.Student;
+import com.sd.HibernateJPA.entity.Subject;
 
 import java.util.List;
 
@@ -12,4 +13,9 @@ public interface IStudentDao {
     List<Student> findByGmail();
     int updateLastName(String oldLastName, String newLastName);
     int deleteById(Integer id);
+    Student findStudentWithSubjectsById(Integer studentId);
+    Subject findSubjectWithStudentsById(Integer subjectId);
+    void updateSubject(Subject subject);
+    void deleteStudentById(Integer studentId);
+    void deleteSubjectById(Integer subjectId);
 }

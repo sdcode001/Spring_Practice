@@ -13,4 +13,6 @@ public interface ITutorDao {
     void updateCourse(Course course);
     void deleteTutorById(Integer id);
     void deleteCourseById(Integer id);
+    void saveCourse(Course course);
+    Course findCourseByIdJoinFetch(Integer id);
 }

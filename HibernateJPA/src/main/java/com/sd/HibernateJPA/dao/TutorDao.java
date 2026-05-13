@@ -98,9 +98,36 @@ public class TutorDao implements ITutorDao{
     public void deleteCourseById(Integer id) {
         Course course = findCourseById(id);
         //remove the association of course from courses for tutor
-        course.getTutor().getCourses().remove(course);
-        //delete the course, This will not delete associated tutor as no cascading for delete is defined
+        if(course.getTutor() != null){
+            course.getTutor().getCourses().remove(course);
+        }
+
+        /*
+        * Delete the course, This will not delete associated tutor as no cascading for delete is defined
+        * but will delete all associated reviews as CascadeType.ALL
+        * */
         this.entityManager.remove(course);
+    }
+
+    @Override
+    @Transactional
+    public void saveCourse(Course course) {
+        try{
+            //NOTE- This will insert associated reviews also to DB as cascade type is ALL
+            this.entityManager.persist(course);
+        }
+        catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    //As Course and Review has OneToMany relation with fetch type LAZY, Hence using Join Fetch for all data
+    @Override
+    public Course findCourseByIdJoinFetch(Integer id) {
+        TypedQuery<Course> query = this.entityManager.createQuery("select c from Course c JOIN FETCH c.reviews where c.id = :data", Course.class);
+        query.setParameter("data", id);
+        Course result = query.getSingleResult();
+        return result;
     }
 
 }
